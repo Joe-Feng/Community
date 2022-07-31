@@ -1,0 +1,157 @@
+server:
+  port: 8088
+  servlet:
+    context-path:
+
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.1.1:3306/community?characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong
+    username: root
+    password:
+    #HikariDataSource
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
+  #thymeleaf
+  thymeleaf:
+    cache: true
+  #mail
+  mail:
+    # SMTP服务器域名
+    host: smtp.163.com
+    # 编码集
+    default-encoding: UTF-8
+    # 邮箱用户名
+    username: xxx@163.com
+    # 授权码(注意不是邮箱密码！)
+    password:
+    # 协议：smtps
+    protocol: smtps
+    # 详细配置
+    properties:
+      mail:
+        smtp:
+          # 设置是否需要认证,如果为true,那么用户名和密码就必须的,
+          # 如果设置false,可以不设置用户名和密码
+          # (前提要知道对接的平台是否支持无密码进行访问的)
+          auth: true
+          #STARTTLS[1]  是对纯文本通信协议的扩展。
+          #它提供一种方式将纯文本连接升级为加密连接（TLS或SSL）
+          # 而不是另外使用一个端口作加密通信。
+          starttls:
+            enable: true
+            required: true
+  #Redis
+  redis:
+    host: 192.168.1.1 # Redis服务器地址
+    database: 1 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    #连接池
+    lettuce:
+      pool:
+        max-active: 8 # 连接池最大连接数
+        max-idle: 8 # 连接池最大空闲连接数
+        min-idle: 0 # 连接池最小空闲连接数
+        max-wait: -1ms # 连接池最大阻塞等待时间，负值表示没有限制
+    timeout: 3000ms # 连接超时时间（毫秒）
+  #kafka
+  kafka:
+    # 服务器地址及其 kafka 端口
+    bootstrap-servers: 192.168.1.1:9092
+    # 消费者配置
+    consumer:
+      # 消费者分组的id,可以在 kafka 的 config 目录下的 consumer.properties 中配置
+      group-id: test-consumer-group
+      # 是否自动提交消费者的偏移量
+      enable-auto-commit: true
+      # 自动提交的频率 3s
+      auto-commit-interval: 3000
+  #elasticsearch
+  elasticsearch:
+    uris: http://192.168.1.1:9200
+    # username: xxx
+    # password: yyy
+    # connection-timeout: 1
+    # read-timeout: 30
+  #quartz : 分布式定时任务调度相关配置
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler      
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+  #servlet
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.xcf.community.pojo
+  configuration:
+    use-generated-keys: true
+    map-underscore-to-camel-case: true
+
+
+#logging:
+#  file:
+#    path: D:/code/log/community
+#  level:
+#    com.xcf.community: debug
+
+
+#community
+community:
+  path:
+    domain: http://192.168.1.1:8088
+    upload: /tmp/upload
+
+
+#WK
+wk:
+  image:
+    command: /opt/wkhtmltoimage.sh
+    storage: /tmp/wk-image
+
+
+
+
+# aliyun-OSS相关配置信息
+aliyun:
+  access-key-id:  # 访问身份验证中用到用户标识
+  access-key-secret:  # 用户用于加密签名字符串和oss用来验证签名字符串的密钥
+  end-point: oss-cn-beijing.aliyuncs.com # oss对外服务的访问域名
+  bucket-name: xxx-oss # oss的存储空间
+  url-prefix: http://xxx-oss.oss-cn-beijing.aliyuncs.com/ # Bucket 域名
+  file-host: community/header/             # 目标文件夹
+
+#caffeine 本地缓存相关配置信息
+caffeine:
+  posts:
+    max-size: 15        # max-size:表示本地缓存空间内最多能缓存的数据条数 15条
+    expire-second: 180  # expire-seconds:表示本地缓存数据的过期时间 180s
+
+
+#Actutor
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health     #暴露哪些断点
+        exclude: caches   #不暴露哪些端点
